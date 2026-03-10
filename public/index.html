@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T H W B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #1a1a1a;
+  --white: #ffffff;
+  --off: #f5f3f0;
+  --border: #e8e4df;
+  --muted: #999;
+  --font: 'DM Sans', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  font-weight: 300;
+  background: var(--white);
+  color: var(--black);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+a { text-decoration: none; color: inherit; cursor: pointer; }
+
+/* ─── VIEWS ─── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── ANNOUNCEMENT BAR ─── */
+.announcement-bar {
+  background: #f5f3f0;
+  color: var(--black);
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.announcement-slide {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.announcement-slide.active { opacity: 1; }
+
+/* ─── HEADER ─── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--white);
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 52px;
+  position: relative;
+}
+.header-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--black);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  z-index: 1;
+  flex: 1;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 12px;
+  font-weight: 300;
+  cursor: pointer;
+  z-index: 1;
+  flex: 1;
+  justify-content: flex-end;
+}
+.nav-item {
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--black);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.nav-item:hover { opacity: 1; }
+.nav-item.active { opacity: 1; font-weight: 400; }
+
+/* ═══════════════════════════════════════
+   SHOP VIEW
+═══════════════════════════════════════ */
+
+/* ─── FILTER BAR ─── */
+.filter-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 32px;
+  height: 46px;
+  position: sticky;
+  top: 52px;
+  background: var(--white);
+  z-index: 100;
+}
+.filter-grid-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.grid-label { font-size: 12px; font-weight: 300; color: var(--muted); }
+.grid-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font); font-size: 12px; font-weight: 300;
+  color: var(--muted); padding: 0; transition: color 0.15s;
+}
+.grid-btn:hover { color: var(--black); }
+.grid-btn.active { color: var(--black); font-weight: 400; }
+.filter-cats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  justify-content: center;
+}
+.cat-link {
+  font-size: 12px; font-weight: 300; cursor: pointer;
+  color: var(--muted); transition: color 0.18s;
+}
+.cat-link:hover { color: var(--black); }
+.cat-link.active { color: var(--black); font-weight: 400; }
+.filter-right { display: flex; align-items: center; justify-content: flex-end; }
+.filter-btn {
+  font-size: 12px; font-weight: 300; cursor: pointer;
+  background: none; border: none; font-family: var(--font); color: var(--black);
+}
+.filter-btn:hover { opacity: 0.7; }
+
+/* ─── FILTER DRAWER ─── */
+.filter-drawer {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 500; display: none;
+}
+.filter-drawer.open { display: flex; }
+.filter-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.25); }
+.filter-panel {
+  position: relative; background: var(--white); width: 360px;
+  max-width: 90vw; height: 100%; overflow-y: auto; z-index: 1;
+  display: flex; flex-direction: column;
+}
+.filter-panel-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  font-size: 12px; letter-spacing: 0.04em; font-weight: 400;
+}
+.close-btn {
+  background: none; border: none; cursor: pointer; font-size: 22px;
+  color: var(--black); font-family: var(--font); font-weight: 300;
+}
+.filter-section { border-bottom: 1px solid var(--border); }
+.filter-section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 24px; cursor: pointer; font-size: 12px; font-weight: 300;
+  letter-spacing: 0.04em; user-select: none;
+}
+.filter-section-body { padding: 0 24px 20px; display: none; }
+.filter-section-body.open { display: block; }
+.filter-color-grid { display: flex; flex-wrap: wrap; gap: 14px; }
+.color-option {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--muted);
+}
+.color-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1.5px solid var(--border); transition: border-color 0.15s;
+}
+.color-option.active .color-circle { border-color: var(--black); border-width: 2px; }
+.color-option.active { color: var(--black); }
+.size-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.size-chip {
+  padding: 8px 14px; border: 1px solid var(--border); font-size: 11px;
+  letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s;
+  background: none; font-family: var(--font); color: var(--black);
+}
+.size-chip.active, .size-chip:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+.sort-options { display: flex; flex-direction: column; gap: 14px; }
+.sort-option { display: flex; align-items: center; gap: 10px; font-size: 12px; cursor: pointer; }
+.filter-apply { margin-top: auto; padding: 20px 24px; border-top: 1px solid var(--border); }
+.apply-btn {
+  width: 100%; padding: 14px; background: var(--black); color: var(--white);
+  border: none; font-family: var(--font); font-size: 12px; font-weight: 300;
+  letter-spacing: 0.06em; cursor: pointer;
+}
+
+/* ─── PRODUCT GRID ─── */
+.products-section { padding: 0 32px 80px; }
+.results-count { font-size: 11px; color: var(--muted); padding: 14px 0 10px; }
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px 24px;
+}
+.product-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.product-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.product-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+.product-card { position: relative; cursor: pointer; }
+
+.product-img-wrap {
+  display: block; position: relative;
+  aspect-ratio: 3/4; overflow: hidden; background: var(--off);
+}
+.product-img-placeholder {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.4s ease;
+}
+.product-img-placeholder.img-primary { opacity: 1; z-index: 1; }
+.product-img-placeholder.img-secondary { opacity: 0; z-index: 2; }
+.product-card:hover .product-img-placeholder.img-primary { opacity: 0; }
+.product-card:hover .product-img-placeholder.img-secondary { opacity: 1; }
+
+.thobe-svg {
+  position: absolute; width: 50%; top: 5%;
+  left: 50%; transform: translateX(-50%);
+}
+
+.product-card:hover .product-name-row,
+.product-card:hover .product-variant { display: none; }
+.quick-add { display: none; }
+.product-card:hover .quick-add { display: flex; flex-direction: column; gap: 6px; }
+.quick-add-sizes { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 2px 0; }
+.qa-size {
+  padding: 0; border: none; font-size: 12px; cursor: pointer;
+  background: none; font-family: var(--font); color: var(--muted);
+  transition: color 0.12s; font-weight: 400;
+}
+.qa-size:hover { color: var(--black); }
+.qa-size.selected { color: var(--black); text-decoration: underline; text-underline-offset: 3px; }
+
+.product-info { padding: 10px 0 36px; }
+.product-name-row {
+  display: flex; justify-content: space-between;
+  align-items: baseline; gap: 8px;
+}
+.product-name { font-size: 12px; font-weight: 400; color: var(--black); }
+.product-price { font-size: 12px; white-space: nowrap; font-weight: 300; font-variant-numeric: tabular-nums; }
+.product-variant { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ═══════════════════════════════════════
+   PRODUCT DETAIL VIEW
+═══════════════════════════════════════ */
+
+/* ─── BREADCRUMB ─── */
+.breadcrumb {
+  padding: 14px 32px;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.breadcrumb-link {
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.breadcrumb-link:hover { color: var(--black); }
+
+/* ─── PRODUCT LAYOUT ─── */
+.product-layout {
+  display: grid;
+  grid-template-columns: 55% 1fr;
+  min-height: calc(100vh - 90px);
+  align-items: start;
+}
+
+.image-side { position: relative; background: #f0ede8; }
+
+.image-dots {
+  position: absolute; left: 16px; top: 50%;
+  transform: translateY(-50%); display: flex;
+  flex-direction: column; gap: 8px; z-index: 10;
+}
+.image-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #ccc; cursor: pointer; transition: background 0.2s;
+}
+.image-dot.active { background: var(--black); }
+
+.images-scroll { width: 100%; }
+
+.product-image {
+  width: 100%; aspect-ratio: 3/4;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.product-image + .product-image { border-top: 2px solid var(--white); }
+.product-image svg {
+  position: absolute; width: 52%; top: 5%;
+  left: 50%; transform: translateX(-50%);
+}
+
+.info-side {
+  padding: 32px 0 60px 0;
+  position: sticky; top: 52px;
+  max-height: calc(100vh - 52px);
+  overflow-y: auto; scrollbar-width: none;
+  display: flex;
+  justify-content: center;
+}
+.info-side::-webkit-scrollbar { display: none; }
+
+.info-inner {
+  width: 100%;
+  max-width: 280px;
+}
+
+.product-color-name { font-size: 12px; color: var(--black); margin-bottom: 4px; }
+.product-title-large { font-size: 18px; font-weight: 300; margin-bottom: 4px; }
+.product-price-large { font-size: 13px; font-weight: 300; font-variant-numeric: tabular-nums; margin-bottom: 0; }
+
+.divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+.swatches-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.swatch {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--border); cursor: pointer; transition: border-color 0.15s;
+}
+.swatch.active { border-color: var(--black); border-width: 2px; }
+.swatch:hover { border-color: #aaa; }
+
+.model-info { font-size: 12px; color: var(--black); margin-bottom: 16px; line-height: 1.5; }
+
+.size-row {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 16px;
+}
+.sizes { display: flex; gap: 14px; align-items: center; }
+.size-opt {
+  font-size: 13px; font-weight: 300; color: var(--black); cursor: pointer;
+  transition: color 0.15s; background: none; border: none;
+  font-family: var(--font); padding: 0;
+}
+.size-opt:hover { color: var(--black); }
+.size-opt.active { color: var(--black); font-weight: 400; text-decoration: underline; text-underline-offset: 4px; }
+.sizes.has-selection .size-opt:not(.active) { color: var(--muted); }
+
+.size-chart-link {
+  font-size: 12px; color: var(--black); text-decoration: underline;
+  text-underline-offset: 3px; cursor: pointer; white-space: nowrap;
+  background: none; border: none; font-family: var(--font); font-weight: 300;
+}
+
+.add-to-cart-btn {
+  width: 100%; padding: 14px; background: var(--black); color: var(--white);
+  border: none; font-family: var(--font); font-size: 12px; font-weight: 300;
+  letter-spacing: 0.04em; cursor: pointer; transition: background 0.2s; margin-bottom: 20px;
+}
+.add-to-cart-btn:hover { background: #333; }
+
+.tabs-nav {
+  display: flex; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+}
+.tab-btn {
+  font-size: 12px; font-weight: 300; color: var(--muted); background: none;
+  border: none; border-bottom: 1.5px solid transparent; padding: 10px 12px 10px 0;
+  margin-bottom: -1px; cursor: pointer; font-family: var(--font); transition: color 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:first-child { padding-left: 0; }
+.tab-btn.active { color: var(--black); border-bottom-color: var(--black); }
+.tab-btn:hover { color: var(--black); }
+
+.tab-content { display: none; font-size: 12px; font-weight: 300; color: var(--black); line-height: 1.8; }
+.tab-content.active { display: block; }
+
+.complete-look { margin-top: 32px; }
+.complete-look-title { font-size: 13px; font-weight: 400; margin-bottom: 16px; }
+.look-item {
+  display: grid; grid-template-columns: 64px 1fr auto;
+  gap: 12px; align-items: center; padding: 14px 0;
+  border-top: 1px solid var(--border);
+}
+.look-img { aspect-ratio: 3/4; background: var(--off); display: flex; align-items: center; justify-content: center; }
+.look-img svg { width: 70%; opacity: 0.2; }
+.look-info { display: flex; flex-direction: column; gap: 3px; }
+.look-name { font-size: 12px; font-weight: 400; }
+.look-variant { font-size: 11px; color: var(--muted); }
+.look-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.look-price { font-size: 12px; font-variant-numeric: tabular-nums; }
+.look-add {
+  font-size: 11px; color: var(--black); text-decoration: underline;
+  text-underline-offset: 3px; cursor: pointer; background: none;
+  border: none; font-family: var(--font); font-weight: 300;
+}
+
+/* ─── SIZE GUIDE MODAL ─── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.25);
+  z-index: 600; display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); width: 480px; max-width: 90vw;
+  max-height: 80vh; overflow-y: auto; padding: 32px;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.modal-title { font-size: 14px; font-weight: 400; }
+.modal-close {
+  background: none; border: none; font-size: 22px; cursor: pointer;
+  font-family: var(--font); font-weight: 300; color: var(--black);
+}
+.size-table { width: 100%; border-collapse: collapse; font-size: 12px; font-weight: 300; }
+.size-table th {
+  text-align: left; padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-weight: 400; font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--muted);
+}
+.size-table td { padding: 12px 0; border-bottom: 1px solid var(--border); }
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 32px 32px;
+  margin-top: 0;
+}
+.footer-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 32px; margin-bottom: 48px;
+}
+.footer-col-title { font-size: 12px; font-weight: 400; margin-bottom: 18px; }
+.footer-col a { display: block; font-size: 12px; color: var(--muted); margin-bottom: 10px; transition: color 0.18s; }
+.footer-col a:hover { color: var(--black); }
+.footer-brand-name { font-size: 14px; font-weight: 400; letter-spacing: 0.38em; text-transform: uppercase; margin-bottom: 14px; }
+.footer-tagline { font-size: 12px; color: var(--muted); line-height: 1.7; max-width: 200px; }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 24px; border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--muted);
+}
+.footer-social { display: flex; gap: 20px; }
+.footer-social a { font-size: 11px; color: var(--muted); transition: color 0.18s; }
+.footer-social a:hover { color: var(--black); }
+
+@media (max-width: 900px) {
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .product-layout { grid-template-columns: 1fr; }
+  .info-side { position: static; padding: 24px 20px 40px; max-height: none; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .header-top { padding: 0 16px; }
+  .filter-bar, .products-section { padding-left: 16px; padding-right: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── ANNOUNCEMENT BAR (shared) ─── -->
+<div class="announcement-bar">
+  <span class="announcement-slide active">Free shipping on all DK orders</span>
+  <span class="announcement-slide">Free shipping on orders over 500 Kr</span>
+</div>
+
+<!-- ─── HEADER (shared) ─── -->
+<header>
+  <div class="header-top">
+    <nav class="header-left">
+      <span class="nav-item active" onclick="showShop()">Shop All</span>
+      <span class="nav-item" onclick="showShop()">Thobes</span>
+      <span class="nav-item">Our Story</span>
+      <span class="nav-item">Sizing Guide</span>
+      <span class="nav-item">Gifting</span>
+    </nav>
+    <span class="header-logo" onclick="showShop()">T H W B</span>
+    <div class="header-right">
+      <span>Search</span>
+      <span>Account</span>
+      <span>Cart (0)</span>
+    </div>
+  </div>
+</header>
+
+
+<!-- ═══════════════════════════════════════
+     SHOP VIEW
+═══════════════════════════════════════ -->
+<div id="view-shop" class="view active">
+
+  <div style="height: 32px;"></div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="filter-grid-toggle">
+      <span class="grid-label">Grid</span>
+      <button class="grid-btn" onclick="setGrid(2,this)">2</button>
+      <button class="grid-btn" onclick="setGrid(3,this)">3</button>
+      <button class="grid-btn active" onclick="setGrid(4,this)">4</button>
+    </div>
+    <div class="filter-cats">
+      <span class="cat-link active" onclick="filterCat(this,'all')">All</span>
+      <span class="cat-link" onclick="filterCat(this,'thobes')">Thobes</span>
+    </div>
+    <div class="filter-right">
+      <button class="filter-btn" onclick="openFilter()">Filter +</button>
+    </div>
+  </div>
+
+  <!-- Filter drawer -->
+  <div class="filter-drawer" id="filterDrawer">
+    <div class="filter-overlay" onclick="closeFilter()"></div>
+    <div class="filter-panel">
+      <div class="filter-panel-header">
+        <span>Filter &amp; Sort</span>
+        <button class="close-btn" onclick="closeFilter()">×</button>
+      </div>
+      <div class="filter-section">
+        <div class="filter-section-header" onclick="toggleSection(this)">
+          <span>Color</span><span class="toggle-icon">−</span>
+        </div>
+        <div class="filter-section-body open">
+          <div class="filter-color-grid">
+            <div class="color-option active" onclick="this.classList.toggle('active')">
+              <div class="color-circle" style="background:#f5f3ee;"></div><span>White</span>
+            </div>
+            <div class="color-option" onclick="this.classList.toggle('active')">
+              <div class="color-circle" style="background:#c9b27a;"></div><span>Desert</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-section-header" onclick="toggleSection(this)">
+          <span>Size</span><span class="toggle-icon">−</span>
+        </div>
+        <div class="filter-section-body open">
+          <div class="size-options">
+            <button class="size-chip" onclick="this.classList.toggle('active')">XS</button>
+            <button class="size-chip" onclick="this.classList.toggle('active')">S</button>
+            <button class="size-chip" onclick="this.classList.toggle('active')">M</button>
+            <button class="size-chip" onclick="this.classList.toggle('active')">L</button>
+            <button class="size-chip" onclick="this.classList.toggle('active')">XL</button>
+            <button class="size-chip" onclick="this.classList.toggle('active')">XXL</button>
+          </div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-section-header" onclick="toggleSection(this)">
+          <span>Sort by</span><span class="toggle-icon">+</span>
+        </div>
+        <div class="filter-section-body">
+          <div class="sort-options">
+            <label class="sort-option"><input type="radio" name="sort" checked style="accent-color:#1a1a1a"> Featured</label>
+            <label class="sort-option"><input type="radio" name="sort" style="accent-color:#1a1a1a"> Price, low to high</label>
+            <label class="sort-option"><input type="radio" name="sort" style="accent-color:#1a1a1a"> Price, high to low</label>
+            <label class="sort-option"><input type="radio" name="sort" style="accent-color:#1a1a1a"> Newest</label>
+          </div>
+        </div>
+      </div>
+      <div class="filter-apply">
+        <button class="apply-btn" onclick="closeFilter()">Show 2 Products</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="products-section">
+    <div class="results-count">2 products</div>
+    <div class="product-grid cols-4" id="productGrid">
+
+      <!-- White -->
+      <div class="product-card" data-color="thobe" onclick="if(!event.target.closest('.qa-size')) showProduct('white')">
+        <div class="product-img-wrap">
+          <div class="product-img-placeholder img-primary" style="background:#efece6;">
+            <svg class="thobe-svg" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="80" cy="18" rx="16" ry="9" fill="#e8e4dc" stroke="#bbb" stroke-width="1"/>
+              <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#ede9e2" stroke="#bbb" stroke-width="1"/>
+              <path d="M72 20 Q80 26 88 20 L84 60 Q80 64 76 60 Z" fill="#dedad2" stroke="#bbb" stroke-width="0.7"/>
+            </svg>
+          </div>
+          <div class="product-img-placeholder img-secondary" style="background:#dedad3;">
+            <svg class="thobe-svg" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="80" cy="18" rx="16" ry="9" fill="#e2ddd5" stroke="#bbb" stroke-width="1"/>
+              <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#e6e2db" stroke="#bbb" stroke-width="1"/>
+              <line x1="80" y1="20" x2="80" y2="282" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4 3"/>
+              <path d="M72 20 Q80 26 88 20 L84 60 Q80 64 76 60 Z" fill="#d8d4cc" stroke="#bbb" stroke-width="0.7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-name-row">
+            <span class="product-name">The Classic Thobe</span>
+            <span class="product-price">540,00 Kr</span>
+          </div>
+          <div class="product-variant">White</div>
+          <div class="quick-add">
+            <div class="quick-add-sizes">
+              <button class="qa-size" onclick="selectQaSize(this)">XS</button>
+              <button class="qa-size" onclick="selectQaSize(this)">S</button>
+              <button class="qa-size" onclick="selectQaSize(this)">M</button>
+              <button class="qa-size" onclick="selectQaSize(this)">L</button>
+              <button class="qa-size" onclick="selectQaSize(this)">XL</button>
+              <button class="qa-size" onclick="selectQaSize(this)">XXL</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desert -->
+      <div class="product-card" data-color="thobe" onclick="if(!event.target.closest('.qa-size')) showProduct('desert')">
+        <div class="product-img-wrap">
+          <div class="product-img-placeholder img-primary" style="background:#e0d4b8;">
+            <svg class="thobe-svg" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="80" cy="18" rx="16" ry="9" fill="#c4a96a" stroke="#a08040" stroke-width="1"/>
+              <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#cdb47a" stroke="#a08040" stroke-width="1"/>
+              <path d="M72 20 Q80 26 88 20 L84 60 Q80 64 76 60 Z" fill="#b89a5a" stroke="#a08040" stroke-width="0.7"/>
+            </svg>
+          </div>
+          <div class="product-img-placeholder img-secondary" style="background:#cfc09e;">
+            <svg class="thobe-svg" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="80" cy="18" rx="16" ry="9" fill="#b89558" stroke="#96742e" stroke-width="1"/>
+              <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#c4a064" stroke="#96742e" stroke-width="1"/>
+              <line x1="80" y1="20" x2="80" y2="282" stroke="#a07838" stroke-width="0.8" stroke-dasharray="4 3"/>
+              <path d="M72 20 Q80 26 88 20 L84 60 Q80 64 76 60 Z" fill="#a88848" stroke="#96742e" stroke-width="0.7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="product-info">
+          <div class="product-name-row">
+            <span class="product-name">The Classic Thobe</span>
+            <span class="product-price">540,00 Kr</span>
+          </div>
+          <div class="product-variant">Desert</div>
+          <div class="quick-add">
+            <div class="quick-add-sizes">
+              <button class="qa-size" onclick="selectQaSize(this)">XS</button>
+              <button class="qa-size" onclick="selectQaSize(this)">S</button>
+              <button class="qa-size" onclick="selectQaSize(this)">M</button>
+              <button class="qa-size" onclick="selectQaSize(this)">L</button>
+              <button class="qa-size" onclick="selectQaSize(this)">XL</button>
+              <button class="qa-size" onclick="selectQaSize(this)">XXL</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-brand-name">T H W B</div>
+        <p class="footer-tagline">Premium quality thobes, crafted with care. Timeless style at a fair price.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Shop</div>
+        <a>All Thobes</a><a>White</a><a>Desert</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Brand</div>
+        <a>Our Story</a><a>Sizing Guide</a><a>Care Guide</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Service</div>
+        <a>Shipping</a><a>Returns</a><a>Contact</a><a>FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© T H W B 2026</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/thwb.dk/" target="_blank">Instagram</a>
+        <a>TikTok</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PRODUCT DETAIL VIEW
+═══════════════════════════════════════ -->
+<div id="view-product" class="view">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <span class="breadcrumb-link" onclick="showShop()">Shop All</span>
+    <span>/</span>
+    <span>The Classic Thobe</span>
+  </div>
+
+  <div class="product-layout">
+
+    <!-- LEFT: Images -->
+    <div class="image-side">
+      <div class="image-dots">
+        <div class="image-dot active"></div>
+        <div class="image-dot"></div>
+        <div class="image-dot"></div>
+      </div>
+      <div class="images-scroll">
+        <div class="product-image" style="background:#efece6;">
+          <svg class="thobe-img white-img" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="80" cy="18" rx="16" ry="9" fill="#e8e4dc" stroke="#bbb" stroke-width="1"/>
+            <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#ede9e2" stroke="#bbb" stroke-width="1"/>
+            <path d="M72 20 Q80 26 88 20 L84 60 Q80 64 76 60 Z" fill="#dedad2" stroke="#bbb" stroke-width="0.7"/>
+          </svg>
+          <svg class="thobe-img desert-img" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+            <ellipse cx="80" cy="18" rx="16" ry="9" fill="#c4a96a" stroke="#a08040" stroke-width="1"/>
+            <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#cdb47a" stroke="#a08040" stroke-width="1"/>
+            <path d="M72 20 Q80 26 88 20 L84 60 Q80 64 76 60 Z" fill="#b89a5a" stroke="#a08040" stroke-width="0.7"/>
+          </svg>
+        </div>
+        <div class="product-image" style="background:#eae7e2;">
+          <svg class="thobe-img white-img" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="80" cy="18" rx="16" ry="9" fill="#e2ddd5" stroke="#bbb" stroke-width="1"/>
+            <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#e6e2db" stroke="#bbb" stroke-width="1"/>
+            <line x1="80" y1="20" x2="80" y2="282" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4 3"/>
+            <path d="M72 20 Q80 26 88 20 L84 60 Q80 64 76 60 Z" fill="#d8d4cc" stroke="#bbb" stroke-width="0.7"/>
+          </svg>
+          <svg class="thobe-img desert-img" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+            <ellipse cx="80" cy="18" rx="16" ry="9" fill="#b89558" stroke="#96742e" stroke-width="1"/>
+            <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#c4a064" stroke="#96742e" stroke-width="1"/>
+            <line x1="80" y1="20" x2="80" y2="282" stroke="#a07838" stroke-width="0.8" stroke-dasharray="4 3"/>
+            <path d="M72 20 Q80 26 88 20 L84 60 Q80 64 76 60 Z" fill="#a88848" stroke="#96742e" stroke-width="0.7"/>
+          </svg>
+        </div>
+        <div class="product-image" style="background:#e4e1db;">
+          <svg class="thobe-img white-img" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="80" cy="18" rx="16" ry="9" fill="#dedad2" stroke="#bbb" stroke-width="1"/>
+            <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#e2ddd6" stroke="#bbb" stroke-width="1"/>
+            <path d="M60 94 Q80 100 100 94 L100 180 Q80 186 60 180 Z" fill="#d8d4cc" stroke="#bbb" stroke-width="0.6"/>
+          </svg>
+          <svg class="thobe-img desert-img" viewBox="0 0 160 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+            <ellipse cx="80" cy="18" rx="16" ry="9" fill="#b08848" stroke="#8c6828" stroke-width="1"/>
+            <path d="M64 20 L36 72 L18 68 L13 92 L42 94 L42 282 Q42 290 80 290 Q118 290 118 282 L118 94 L147 92 L142 68 L124 72 L96 20 Z" fill="#bc9454" stroke="#8c6828" stroke-width="1"/>
+            <path d="M60 94 Q80 100 100 94 L100 180 Q80 186 60 180 Z" fill="#a07840" stroke="#8c6828" stroke-width="0.6"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Info -->
+    <div class="info-side">
+      <div class="info-inner">
+      <div class="product-color-name" id="pdp-color-label">White</div>
+      <h1 class="product-title-large">The Classic Thobe</h1>
+      <div class="product-price-large">540,- Kr</div>
+
+      <div class="divider"></div>
+
+      <div class="swatches-row">
+        <div class="swatch active" style="background:#f5f3ee;" onclick="pdpSelectColor(this,'White')" title="White"></div>
+        <div class="swatch" style="background:#c9b27a;" onclick="pdpSelectColor(this,'Desert')" title="Desert"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="model-info">This model is 180cm tall and is wearing a size M · Item has a relaxed fit</div>
+
+      <div class="size-row">
+        <div class="sizes">
+          <button class="size-opt" onclick="pdpSelectSize(this)">XS</button>
+          <button class="size-opt" onclick="pdpSelectSize(this)">S</button>
+          <button class="size-opt" onclick="pdpSelectSize(this)">M</button>
+          <button class="size-opt" onclick="pdpSelectSize(this)">L</button>
+          <button class="size-opt" onclick="pdpSelectSize(this)">XL</button>
+          <button class="size-opt" onclick="pdpSelectSize(this)">XXL</button>
+        </div>
+        <button class="size-chart-link" onclick="openSizeGuide()">Size Chart</button>
+      </div>
+
+      <button class="add-to-cart-btn" onclick="pdpAddToCart(this)">Add to cart</button>
+
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'desc')">Description</button>
+        <button class="tab-btn" onclick="switchTab(this,'fabric')">Fabric</button>
+        <button class="tab-btn" onclick="switchTab(this,'sizing')">Sizing</button>
+        <button class="tab-btn" onclick="switchTab(this,'shipping')">Shipping & returns</button>
+      </div>
+      <div class="tab-content active" id="tab-desc">The Classic Thobe is a sophisticated blend of tradition and modernity, featuring a streamlined silhouette with clean, tailored details. Crafted from premium quality fabric, it offers both comfort and elegance. A timeless design with a relaxed fit, suitable for all occasions.</div>
+      <div class="tab-content" id="tab-fabric">100% Premium fabric. Machine wash at 30°C. Do not tumble dry. Iron on low heat. Dry flat.</div>
+      <div class="tab-content" id="tab-sizing">This model is 180cm and wears a size M. The thobe has a relaxed fit. If you are between sizes, we recommend sizing up.</div>
+      <div class="tab-content" id="tab-shipping">Free shipping on all DK orders. Orders are dispatched within 2–3 business days. Returns accepted within 14 days of delivery. Items must be unworn and in original condition.</div>
+
+      <div class="complete-look">
+        <div class="complete-look-title">Complete the look</div>
+        <div class="look-item">
+          <div class="look-img">
+            <svg viewBox="0 0 60 80" fill="none"><rect x="10" y="5" width="40" height="70" rx="2" stroke="#999" stroke-width="1"/></svg>
+          </div>
+          <div class="look-info">
+            <span class="look-name">Classic Kufi Cap</span>
+            <span class="look-variant">White</span>
+          </div>
+          <div class="look-right">
+            <span class="look-price">199,- Kr</span>
+            <button class="look-add">Add To Cart</button>
+          </div>
+        </div>
+      </div>
+      </div><!-- end info-inner -->
+    </div><!-- end info-side -->
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-brand-name">T H W B</div>
+        <p class="footer-tagline">Premium quality thobes, crafted with care. Timeless style at a fair price.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Shop</div>
+        <a onclick="showShop()">All Thobes</a><a onclick="showShop()">White</a><a onclick="showShop()">Desert</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Brand</div>
+        <a>Our Story</a><a>Sizing Guide</a><a>Care Guide</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Service</div>
+        <a>Shipping</a><a>Returns</a><a>Contact</a><a>FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© T H W B 2026</span>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/thwb.dk/" target="_blank">Instagram</a>
+        <a>TikTok</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- SIZE GUIDE MODAL -->
+<div class="modal-overlay" id="sizeModal" onclick="if(event.target===this) closeSizeGuide()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Size Chart</span>
+      <button class="modal-close" onclick="closeSizeGuide()">×</button>
+    </div>
+    <table class="size-table">
+      <thead><tr><th>Size</th><th>Chest (cm)</th><th>Length (cm)</th><th>Shoulder (cm)</th></tr></thead>
+      <tbody>
+        <tr><td>XS</td><td>88–92</td><td>138</td><td>42</td></tr>
+        <tr><td>S</td><td>92–96</td><td>140</td><td>44</td></tr>
+        <tr><td>M</td><td>96–102</td><td>142</td><td>46</td></tr>
+        <tr><td>L</td><td>102–108</td><td>144</td><td>48</td></tr>
+        <tr><td>XL</td><td>108–116</td><td>146</td><td>50</td></tr>
+        <tr><td>XXL</td><td>116–124</td><td>148</td><td>52</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // ─── ANNOUNCEMENT BAR ───
+  const slides = document.querySelectorAll('.announcement-slide');
+  let current = 0;
+  setInterval(() => {
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }, 3500);
+
+  // ─── VIEW SWITCHING ───
+  function showShop() {
+    document.getElementById('view-shop').classList.add('active');
+    document.getElementById('view-product').classList.remove('active');
+    window.scrollTo(0, 0);
+  }
+
+  function showProduct(color) {
+    document.getElementById('view-shop').classList.remove('active');
+    document.getElementById('view-product').classList.add('active');
+    window.scrollTo(0, 0);
+    // Reset size selection
+    document.querySelectorAll('.size-opt').forEach(b => b.classList.remove('active'));
+    // Set colour
+    const swatches = document.querySelectorAll('#view-product .swatch');
+    if (color === 'desert') {
+      pdpSelectColor(swatches[1], 'Desert');
+    } else {
+      pdpSelectColor(swatches[0], 'White');
+    }
+  }
+
+  // ─── SHOP FUNCTIONS ───
+  function openFilter() {
+    document.getElementById('filterDrawer').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeFilter() {
+    document.getElementById('filterDrawer').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function toggleSection(header) {
+    const body = header.nextElementSibling;
+    const icon = header.querySelector('.toggle-icon');
+    body.classList.toggle('open');
+    icon.textContent = body.classList.contains('open') ? '−' : '+';
+  }
+  function filterCat(el, cat) {
+    document.querySelectorAll('.cat-link').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function setGrid(cols, btn) {
+    document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('productGrid').className = 'product-grid cols-' + cols;
+  }
+  function selectQaSize(btn) {
+    const siblings = btn.closest('.quick-add-sizes').querySelectorAll('.qa-size');
+    siblings.forEach(s => s.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  // ─── PRODUCT DETAIL FUNCTIONS ───
+  function pdpSelectColor(el, name) {
+    document.querySelectorAll('#view-product .swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('pdp-color-label').textContent = name;
+    const isDesert = name === 'Desert';
+    document.querySelectorAll('.thobe-img.white-img').forEach(s => s.style.display = isDesert ? 'none' : 'block');
+    document.querySelectorAll('.thobe-img.desert-img').forEach(s => s.style.display = isDesert ? 'block' : 'none');
+  }
+
+  function pdpSelectSize(btn) {
+    document.querySelectorAll('.size-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function pdpAddToCart(btn) {
+    const selected = document.querySelector('.size-opt.active');
+    if (!selected) {
+      btn.textContent = 'Please select a size';
+      btn.style.background = '#555';
+      setTimeout(() => { btn.textContent = 'Add to cart'; btn.style.background = ''; }, 2000);
+      return;
+    }
+    const size = selected.textContent.trim();
+    const color = document.getElementById('pdp-color-label').textContent.trim();
+    const message = encodeURIComponent('The Classic Thobe – ' + color + ', Size ' + size + ' – 540 Kr');
+    window.open('https://mobilepay.dk/erhverv/betalingslink/betal?phone=42160606&amount=540&comment=' + message, '_blank');
+  }
+
+  function switchTab(btn, id) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+  }
+
+  function openSizeGuide() {
+    document.getElementById('sizeModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSizeGuide() {
+    document.getElementById('sizeModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ─── DOT INDICATORS ───
+  window.addEventListener('scroll', () => {
+    const images = document.querySelectorAll('#view-product .product-image');
+    const dots = document.querySelectorAll('.image-dot');
+    let closest = 0, closestDist = Infinity;
+    images.forEach((img, i) => {
+      const dist = Math.abs(img.getBoundingClientRect().top);
+      if (dist < closestDist) { closestDist = dist; closest = i; }
+    });
+    dots.forEach(d => d.classList.remove('active'));
+    if (dots[closest]) dots[closest].classList.add('active');
+  });
+</script>
+</body>
+</html>
