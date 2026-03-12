@@ -310,9 +310,9 @@ header {
 .image-side { position: relative; background: #f0ede8; }
 
 .image-dots {
-  position: absolute; left: 16px; top: 50%;
-  transform: translateY(-50%); display: flex;
-  flex-direction: column; gap: 8px; z-index: 10;
+  position: absolute; bottom: 16px; left: 50%;
+  transform: translateX(-50%); display: flex;
+  flex-direction: row; gap: 8px; z-index: 10;
 }
 .image-dot {
   width: 5px; height: 5px; border-radius: 50%;
@@ -320,14 +320,23 @@ header {
 }
 .image-dot.active { background: var(--black); }
 
-.images-scroll { width: 100%; }
+.images-scroll {
+  width: 100%;
+  display: flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.images-scroll::-webkit-scrollbar { display: none; }
 
 .product-image {
-  width: 100%; aspect-ratio: 3/4;
+  min-width: 100%; aspect-ratio: 3/4;
   display: flex; align-items: center; justify-content: center;
   position: relative; overflow: hidden;
+  scroll-snap-align: start;
 }
-.product-image + .product-image { border-top: 2px solid var(--white); }
+.product-image + .product-image { border-top: none; border-left: 2px solid var(--white); }
 .product-image svg {
   position: absolute; width: 52%; top: 5%;
   left: 50%; transform: translateX(-50%);
@@ -1075,17 +1084,15 @@ footer {
   }
 
   // ─── DOT INDICATORS ───
-  window.addEventListener('scroll', () => {
-    const images = document.querySelectorAll('#view-product .product-image');
-    const dots = document.querySelectorAll('.image-dot');
-    let closest = 0, closestDist = Infinity;
-    images.forEach((img, i) => {
-      const dist = Math.abs(img.getBoundingClientRect().top);
-      if (dist < closestDist) { closestDist = dist; closest = i; }
+  const imagesScrollEl = document.querySelector('.images-scroll');
+  if (imagesScrollEl) {
+    imagesScrollEl.addEventListener('scroll', () => {
+      const dots = document.querySelectorAll('.image-dot');
+      const index = Math.round(imagesScrollEl.scrollLeft / imagesScrollEl.offsetWidth);
+      dots.forEach(d => d.classList.remove('active'));
+      if (dots[index]) dots[index].classList.add('active');
     });
-    dots.forEach(d => d.classList.remove('active'));
-    if (dots[closest]) dots[closest].classList.add('active');
-  });
+  }
 </script>
 </body>
 </html>
