@@ -475,8 +475,85 @@ footer {
 .footer-social a { font-size: 11px; color: var(--muted); transition: color 0.18s; }
 .footer-social a:hover { color: var(--black); }
 
+/* ─── HAMBURGER BTN ─── */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+  z-index: 1;
+}
+.hamburger-btn span {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--black);
+}
+
+/* ─── MOBILE NAV DRAWER ─── */
+.mobile-nav {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 400; display: none;
+}
+.mobile-nav.open { display: flex; }
+.mobile-nav-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.25); }
+.mobile-nav-panel {
+  position: relative; background: var(--white); width: 280px;
+  max-width: 85vw; height: 100%; z-index: 1;
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.mobile-nav-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  font-size: 12px; letter-spacing: 0.04em;
+}
+.mobile-nav-links { padding: 8px 0; }
+.mobile-nav-link {
+  display: block; font-size: 14px; font-weight: 300;
+  color: var(--black); padding: 16px 24px;
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  letter-spacing: 0.02em;
+}
+.mobile-nav-link:last-child { border-bottom: none; }
+
+@media (max-width: 768px) {
+  /* Header */
+  .header-top { padding: 0 20px; }
+  .header-left .nav-item { display: none; }
+  .hamburger-btn { display: flex; }
+  .header-right span:not(:last-child) { display: none; }
+
+  /* Filter bar */
+  .filter-grid-toggle { display: none; }
+  .filter-bar { grid-template-columns: 1fr auto; padding: 0 16px; }
+  .filter-cats { justify-content: flex-start; }
+
+  /* Products */
+  .product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 2px 12px; }
+  .products-section { padding: 0 16px 60px; }
+
+  /* Disable hover effects on touch — always show name/price */
+  .product-card:hover .product-name-row { display: flex !important; }
+  .product-card:hover .product-variant { display: block !important; }
+  .product-card:hover .quick-add { display: none !important; }
+
+  /* Product detail */
+  .breadcrumb { padding: 14px 16px; }
+  .product-layout { grid-template-columns: 1fr; }
+  .info-side { position: static; padding: 20px 16px 40px; max-height: none; }
+  .info-inner { max-width: 100%; }
+  .tabs-nav { overflow-x: auto; }
+  .tab-btn { white-space: nowrap; }
+
+  /* Footer */
+  footer { padding: 36px 20px 24px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px; }
+}
+
 @media (max-width: 900px) {
-  .product-grid { grid-template-columns: repeat(2, 1fr); }
   .product-layout { grid-template-columns: 1fr; }
   .info-side { position: static; padding: 24px 20px 40px; max-height: none; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -497,6 +574,9 @@ footer {
 <header>
   <div class="header-top">
     <nav class="header-left">
+      <button class="hamburger-btn" onclick="openMobileNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
       <span class="nav-item active" onclick="showShop()">Shop All</span>
       <span class="nav-item" onclick="showShop()">Thobes</span>
       <span class="nav-item">Our Story</span>
@@ -511,6 +591,24 @@ footer {
     </div>
   </div>
 </header>
+
+<!-- ─── MOBILE NAV DRAWER ─── -->
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-overlay" onclick="closeMobileNav()"></div>
+  <div class="mobile-nav-panel">
+    <div class="mobile-nav-header">
+      <span>Menu</span>
+      <button class="close-btn" onclick="closeMobileNav()">×</button>
+    </div>
+    <div class="mobile-nav-links">
+      <span class="mobile-nav-link" onclick="showShop(); closeMobileNav()">Shop All</span>
+      <span class="mobile-nav-link" onclick="showShop(); closeMobileNav()">Thobes</span>
+      <span class="mobile-nav-link" onclick="closeMobileNav()">Our Story</span>
+      <span class="mobile-nav-link" onclick="closeMobileNav()">Sizing Guide</span>
+      <span class="mobile-nav-link" onclick="closeMobileNav()">Gifting</span>
+    </div>
+  </div>
+</div>
 
 
 <!-- ═══════════════════════════════════════
@@ -916,6 +1014,16 @@ footer {
     }
   }
 
+  // ─── MOBILE NAV ───
+  function openMobileNav() {
+    document.getElementById('mobileNav').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
   // ─── SHOP FUNCTIONS ───
   function openFilter() {
     document.getElementById('filterDrawer').classList.add('open');
@@ -969,10 +1077,7 @@ footer {
       setTimeout(() => { btn.textContent = 'Add to cart'; btn.style.background = ''; }, 2000);
       return;
     }
-    const size = selected.textContent.trim();
-    const color = document.getElementById('pdp-color-label').textContent.trim();
-    const message = encodeURIComponent('The Classic Thobe – ' + color + ', Size ' + size + ' – 540 Kr');
-    window.open('https://mobilepay.dk/erhverv/betalingslink/betal?phone=42160606&amount=540&comment=' + message, '_blank');
+    window.open('https://ig.me/m/thwb.dk', '_blank');
   }
 
   function switchTab(btn, id) {
